@@ -158,7 +158,7 @@ public class FlipLayout extends FrameLayout
 
   public class FlipAnimator extends Animation {
 
-    public static final float EXPERIMENTAL_VALUE = 50.f;
+    private static final float EXPERIMENTAL_VALUE = 50.f;
     private Camera camera;
     private float centerX;
     private float centerY;
@@ -214,6 +214,7 @@ public class FlipLayout extends FrameLayout
       final Matrix matrix = t.getMatrix();
 
       camera.save();
+      //you can delete this line, it move camera a little far from view and get back
       camera.translate(0.0f, 0.0f, (float) (EXPERIMENTAL_VALUE * Math.sin(radians)));
       camera.rotateX(degrees);
       camera.rotateY(0);
