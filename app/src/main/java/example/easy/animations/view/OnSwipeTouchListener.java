@@ -13,7 +13,7 @@ import java.util.List;
 public class OnSwipeTouchListener implements OnTouchListener {
 
   private final GestureDetector gestureDetector;
-  public List<OnSwipeListener> mSwipeListeners = new ArrayList<>();
+  public List<OnSwipeListener> swipeListeners = new ArrayList<>();
 
   public OnSwipeTouchListener(Context context) {
     gestureDetector = new GestureDetector(context.getApplicationContext(), new GestureListener());
@@ -24,19 +24,19 @@ public class OnSwipeTouchListener implements OnTouchListener {
   }
 
   public void addSwipeListener(OnSwipeListener swipeListener) {
-    if (swipeListener != null && !mSwipeListeners.contains(swipeListener)) {
-      mSwipeListeners.add(swipeListener);
+    if (swipeListener != null && !swipeListeners.contains(swipeListener)) {
+      swipeListeners.add(swipeListener);
     }
   }
 
   public void removeSwipeListener(OnSwipeListener swipeListener) {
-    if (swipeListener != null && mSwipeListeners.contains(swipeListener)) {
-      mSwipeListeners.remove(swipeListener);
+    if (swipeListener != null && swipeListeners.contains(swipeListener)) {
+      swipeListeners.remove(swipeListener);
     }
   }
 
   public void removeSwipeListeners() {
-    mSwipeListeners.clear();
+    swipeListeners.clear();
   }
 
   private final class GestureListener extends SimpleOnGestureListener {
@@ -53,12 +53,12 @@ public class OnSwipeTouchListener implements OnTouchListener {
         if (Math.abs(diffX) > Math.abs(diffY)) {
           if (Math.abs(diffX) > SWIPE_THRESHOLD && Math.abs(velocityX) > SWIPE_VELOCITY_THRESHOLD) {
             if (diffX > 0) {
-              for (OnSwipeListener swipeListener : mSwipeListeners) {
+              for (OnSwipeListener swipeListener : swipeListeners) {
                 swipeListener.onSwipeRight();
                 Log.d("Gesture", "SwipeRight");
               }
             } else {
-              for (OnSwipeListener swipeListener : mSwipeListeners) {
+              for (OnSwipeListener swipeListener : swipeListeners) {
                 swipeListener.onSwipeLeft();
                 Log.d("Gesture", "SwipeLeft");
               }
@@ -68,12 +68,12 @@ public class OnSwipeTouchListener implements OnTouchListener {
         } else if (Math.abs(diffY) > SWIPE_THRESHOLD
             && Math.abs(velocityY) > SWIPE_VELOCITY_THRESHOLD) {
           if (diffY > 0) {
-            for (OnSwipeListener swipeListener : mSwipeListeners) {
+            for (OnSwipeListener swipeListener : swipeListeners) {
               swipeListener.onSwipeDown();
               Log.d("Gesture", "SwipeDown");
             }
           } else {
-            for (OnSwipeListener swipeListener : mSwipeListeners) {
+            for (OnSwipeListener swipeListener : swipeListeners) {
               swipeListener.onSwipeUp();
               Log.d("Gesture", "SwipeUp");
             }

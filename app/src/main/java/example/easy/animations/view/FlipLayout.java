@@ -15,12 +15,12 @@ public class FlipLayout extends FrameLayout
     implements Animation.AnimationListener, View.OnClickListener, OnSwipeListener {
   public static final int ANIM_DURATION_MILLIS = 500;
   private static final Interpolator fDefaultInterpolator = new DecelerateInterpolator();
-  private OnFlipListener mListener;
-  private FlipAnimator mAnimation;
-  private boolean mIsFlipped;
-  private Direction mDirection;
-  private OnSwipeTouchListener mOnTouchListener;
-  private View mFrontView, mBackView;
+  private OnFlipListener listener;
+  private FlipAnimator animator;
+  private boolean isFlipped;
+  private Direction direction;
+  private OnSwipeTouchListener touchListener;
+  private View frontView, backView;
 
   public FlipLayout(Context context, AttributeSet attrs, int defStyle) {
     super(context, attrs, defStyle);
@@ -38,13 +38,13 @@ public class FlipLayout extends FrameLayout
   }
 
   private void init(Context context) {
-    mAnimation = new FlipAnimator();
-    mAnimation.setAnimationListener(this);
-    mAnimation.setInterpolator(fDefaultInterpolator);
-    mAnimation.setDuration(ANIM_DURATION_MILLIS);
-    mDirection = Direction.DOWN;
+    animator = new FlipAnimator();
+    animator.setAnimationListener(this);
+    animator.setInterpolator(fDefaultInterpolator);
+    animator.setDuration(ANIM_DURATION_MILLIS);
+    direction = Direction.DOWN;
     setSoundEffectsEnabled(true);
-    mOnTouchListener = new OnSwipeTouchListener(context);
+    touchListener = new OnSwipeTouchListener(context);
   }
 
   @Override protected void onFinishInflate() {
@@ -54,75 +54,75 @@ public class FlipLayout extends FrameLayout
       throw new IllegalStateException("FlipLayout can host only two direct children");
     }
 
-    mFrontView = getChildAt(0);
-    mFrontView.setOnTouchListener(mOnTouchListener);
-    mFrontView.setOnClickListener(this);
-    mBackView = getChildAt(1);
-    mBackView.setOnTouchListener(mOnTouchListener);
-    mBackView.setOnClickListener(this);
-    mOnTouchListener.addSwipeListener(this);
+    frontView = getChildAt(0);
+    frontView.setOnTouchListener(touchListener);
+    frontView.setOnClickListener(this);
+    backView = getChildAt(1);
+    backView.setOnTouchListener(touchListener);
+    backView.setOnClickListener(this);
+    touchListener.addSwipeListener(this);
   }
 
   private void toggleView() {
-    if (mFrontView == null || mBackView == null) {
+    if (frontView == null || backView == null) {
       return;
     }
 
-    if (mIsFlipped) {
-      mFrontView.setVisibility(View.VISIBLE);
-      mBackView.setVisibility(View.GONE);
+    if (isFlipped) {
+      frontView.setVisibility(View.VISIBLE);
+      backView.setVisibility(View.GONE);
     } else {
-      mFrontView.setVisibility(View.GONE);
-      mBackView.setVisibility(View.VISIBLE);
+      frontView.setVisibility(View.GONE);
+      backView.setVisibility(View.VISIBLE);
     }
 
-    mIsFlipped = !mIsFlipped;
+    isFlipped = !isFlipped;
   }
 
   public void setOnFlipListener(OnFlipListener listener) {
-    mListener = listener;
+    this.listener = listener;
   }
 
   public void reset() {
-    mIsFlipped = false;
-    mDirection = Direction.DOWN;
-    mFrontView.setVisibility(View.VISIBLE);
-    mBackView.setVisibility(View.GONE);
+    isFlipped = false;
+    direction = Direction.DOWN;
+    frontView.setVisibility(View.VISIBLE);
+    backView.setVisibility(View.GONE);
   }
 
   public void toggleUp() {
-    mDirection = Direction.UP;
+    direction = Direction.UP;
     startAnimation();
   }
 
   public void toggleDown() {
-    mDirection = Direction.DOWN;
+    direction = Direction.DOWN;
     startAnimation();
   }
 
   public void startAnimation() {
-    mAnimation.setVisibilitySwapped();
-    startAnimation(mAnimation);
+    animator.setVisibilitySwapped();
+    startAnimation(animator);
   }
 
   @Override public void onAnimationStart(Animation animation) {
-    if (mListener != null) {
-      mListener.onFlipStart(this);
+    if (listener != null) {
+      listener.onFlipStart(this);
     }
   }
 
   @Override public void onAnimationEnd(Animation animation) {
-    if (mListener != null) {
-      mListener.onFlipEnd(this);
+    if (listener != null) {
+      listener.onFlipEnd(this);
     }
-    mDirection = mDirection == Direction.UP ? Direction.DOWN : Direction.UP;
+    direction = direction == Direction.UP ? Direction.DOWN : Direction.UP;
   }
 
   @Override public void onAnimationRepeat(Animation animation) {
   }
 
   public void setAnimationListener(Animation.AnimationListener listener) {
-    mAnimation.setAnimationListener(listener);
+    animator.setAnimationListener(listener);
   }
 
   @Override public void onClick(View view) {
@@ -186,7 +186,7 @@ public class FlipLayout extends FrameLayout
 
       float degrees = (float) (180.0 * radians / Math.PI);
 
-      if (mDirection == Direction.UP) {
+      if (direction == Direction.UP) {
         degrees = -degrees;
       }
 
@@ -197,11 +197,11 @@ public class FlipLayout extends FrameLayout
       // not
       // do this.
       if (interpolatedTime >= 0.5f) {
-        if (mDirection == Direction.UP) {
+        if (direction == Direction.UP) {
           degrees += 180.f;
         }
 
-        if (mDirection == Direction.DOWN) {
+        if (direction == Direction.DOWN) {
           degrees -= 180.f;
         }
 
