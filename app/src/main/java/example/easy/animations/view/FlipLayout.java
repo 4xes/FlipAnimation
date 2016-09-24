@@ -61,7 +61,7 @@ public class FlipLayout extends FrameLayout
     backView.setOnTouchListener(touchListener);
     backView.setOnClickListener(this);
     touchListener.addSwipeListener(this);
-	reset();
+    reset();
   }
 
   private void toggleView() {
