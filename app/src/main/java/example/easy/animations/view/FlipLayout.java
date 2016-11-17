@@ -101,6 +101,16 @@ public class FlipLayout extends FrameLayout
     startAnimation();
   }
 
+  public void toggleLeft() {
+    direction = Direction.LEFT;
+    startAnimation();
+  }
+
+  public void toggleRight() {
+    direction = Direction.RIGHT;
+    startAnimation();
+  }
+
   public void startAnimation() {
     animator.setVisibilitySwapped();
     startAnimation(animator);
@@ -116,7 +126,10 @@ public class FlipLayout extends FrameLayout
     if (listener != null) {
       listener.onFlipEnd(this);
     }
-    direction = direction == Direction.UP ? Direction.DOWN : Direction.UP;
+    if (direction == Direction.UP) direction = Direction.DOWN;
+    if (direction == Direction.DOWN) direction = Direction.UP;
+    if (direction == Direction.LEFT) direction = Direction.RIGHT;
+    if (direction == Direction.RIGHT) direction = Direction.LEFT;
   }
 
   @Override public void onAnimationRepeat(Animation animation) {
@@ -131,11 +144,11 @@ public class FlipLayout extends FrameLayout
   }
 
   @Override public void onSwipeLeft() {
-
+    toggleLeft();
   }
 
   @Override public void onSwipeRight() {
-
+    toggleRight();
   }
 
   @Override public void onSwipeUp() {
@@ -147,7 +160,7 @@ public class FlipLayout extends FrameLayout
   }
 
   private enum Direction {
-    UP, DOWN
+    UP, DOWN, LEFT, RIGHT
   }
 
   public interface OnFlipListener {
@@ -187,7 +200,7 @@ public class FlipLayout extends FrameLayout
 
       float degrees = (float) (180.0 * radians / Math.PI);
 
-      if (direction == Direction.UP) {
+      if (direction == Direction.UP || direction == Direction.LEFT) {
         degrees = -degrees;
       }
 
@@ -198,12 +211,15 @@ public class FlipLayout extends FrameLayout
       // not
       // do this.
       if (interpolatedTime >= 0.5f) {
-        if (direction == Direction.UP) {
-          degrees += 180.f;
-        }
-
-        if (direction == Direction.DOWN) {
-          degrees -= 180.f;
+        switch (direction) {
+          case LEFT:
+          case UP:
+            degrees += 180.f;
+            break;
+          case RIGHT:
+          case DOWN:
+            degrees -= 180.f;
+            break;
         }
 
         if (!visibilitySwapped) {
@@ -217,8 +233,18 @@ public class FlipLayout extends FrameLayout
       camera.save();
       //you can delete this line, it move camera a little far from view and get back
       camera.translate(0.0f, 0.0f, (float) (EXPERIMENTAL_VALUE * Math.sin(radians)));
-      camera.rotateX(degrees);
-      camera.rotateY(0);
+      switch (direction) {
+        case DOWN:
+        case UP:
+          camera.rotateX(degrees);
+          camera.rotateY(0);
+          break;
+        case LEFT:
+        case RIGHT:
+          camera.rotateY(degrees);
+          camera.rotateX(0);
+          break;
+      }
       camera.rotateZ(0);
       camera.getMatrix(matrix);
       camera.restore();
